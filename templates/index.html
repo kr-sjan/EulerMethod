@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Euler's Method Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f8f9fa; color: #333; }
+        .container { max-width: 850px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 0 auto; padding-bottom: 60px; }
+        
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        h2, h3 { color: #2c3e50; }
+        .math-box { background: #eef2f7; padding: 15px; border-left: 5px solid #3498db; font-size: 1.1em; margin: 15px 0; }
+        .example-box { background: #fafafa; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 20px; }
+        
+        /* === BUBBLE BUTTON === */
+        .calculator-bubble {
+            position: fixed; bottom: 30px; right: 30px; padding: 12px 24px;
+            background-color: #3498db; color: white; border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1001;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .calculator-bubble:hover { transform: scale(1.05); background-color: #2980b9; }
+
+        /* === CALCULATOR PANEL === */
+        .calculator-panel {
+            position: fixed; bottom: 95px; right: 30px; width: 360px;
+            background: white; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            z-index: 1000; display: none; overflow: hidden; border: 1px solid #e2e8f0;
+        }
+        .panel-header {
+            background: #2c3e50; color: white; padding: 15px; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .close-btn { cursor: pointer; font-size: 20px; }
+        .panel-body { padding: 20px; max-height: 450px; overflow-y: auto; }
+        
+        /* === FORM STYLE === */
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9em; }
+        input[type="number"], input[type="text"] { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1em; box-sizing: border-box; }
+        button { width: 100%; background: #3498db; color: white; padding: 10px; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #2980b9; }
+
+        /* === LIVE ANSWER BOX === */
+        .answer-container { background: #fffdf3; border: 2px dashed #f1c40f; border-radius: 8px; padding: 20px; margin-top: 30px; }
+        .answer-title { color: #d35400; font-size: 1.4em; font-weight: bold; margin-top: 0; border-bottom: 2px solid #f1c40f; padding-bottom: 5px; }
+        .section-header { font-weight: bold; margin-top: 15px; color: #2c3e50; font-size: 1.1em; }
+        .final-answer-box { border: 3px solid #27ae60; background: #ebf7ee; padding: 15px; border-radius: 6px; font-size: 1.2em; font-weight: bold; text-align: center; margin-top: 20px; color: #27ae60; }
+        
+        details { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; margin-top: 5px; }
+        summary { font-weight: bold; cursor: pointer; color: #3498db; }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <h1>Euler's Method</h1>
+    
+    <p style="text-align: justify;">Welcome! This web application is designed as an interactive learning tool for numerical analysis. It utilizes Euler's Method to provide dynamic and accurate approximations for Ordinary Differential Equations (ODEs), making it easier to visualize and understand calculation steps in calculus and modern engineering applications.</p>
+    
+    <hr>
+    
+    <h2>What is Euler's Method?</h2>
+    <p style="text-align: justify;">Euler's Method is a simple numerical method used to solve first-order Ordinary Differential Equations (ODEs) with a given initial value. It works by approximating the unknown curve of a function step-by-step, using the slope (derivative) at a known point to find the value of the next point. <br><br> Consider a first-order differential equation expressed as:</p>
+    
+    <div class="math-box">
+        $$\frac{dy}{dx} = f(x,y)$$
+    </div>
+
+    <p style="text-align: justify;"> Given the initial starting values \( (x_0, y_0) \) and a constant step size \(h\), we can approximate the next value \(y_{n+1}\) using the standard Euler's method formula:</p>
+
+    <div class="math-box">
+        $$y_{n+1} = y_n + h \cdot f(x_n, y_n)$$
+    </div>
+    
+    <hr>
+
+    <h3>Step-by-step Solution using Euler's Method:</h3>
+    <div class="example-box">
+        <p><strong>Step 1: Standardize the Differential Equation</strong><br>
+        Ensure that the given first-order differential equation is isolated and written clearly in the form of:</p>
+        $$\frac{dy}{dx} = f(x, y)$$
+        
+        <p style="margin-top: 15px;"><strong>Step 2: Calculate the Sub-intervals for x</strong><br>
+        Determine all the x values from the initial point \( x_0 \) up to the target value \( x_{\text{target}} \) using the constant step size \( h \):</p>
+        $$x_{n+1} = x_n + h$$
+        <p>This generates the sequence of points: \(x_0, x_1, x_2, \dots, x_n\).</p>
+        
+        <p style="margin-top: 15px;"><strong>Step 3: Iterative Calculation for y_n+1</strong><br>
+        Solve for the corresponding y values step-by-step using the Euler's formula:</p>
+        $$y_{n+1} = y_n + h \cdot f(x_n, y_n)$$
+        <p>Substitute the values of \(x\) and \(y\) from the previous step. Repeat this process until you reach \(x_{n-1}\) to find the final approximated value of \(y\) at the target \(x_n\).</p>
+    </div>
+
+    <hr>
+
+    <h2>Examples</h2>
+    
+    <div class="example-box" style="margin-bottom: 40px; text-align: justify;">
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">Example 1:</h3>
+        <p><strong>Problem:</strong><br>
+        Approximate the value of \( y(3) \) with a step size of \( h = 0.5 \), given the initial condition \( (0,1) \) and the differential equation:</p>
+        $$\frac{dy}{dx} - x = y$$
+
+        <h4 style="margin-top: 20px; margin-bottom: 10px;">Solution:</h4>
+        <p><strong>Step 1: Standardize the Differential Equation</strong><br>
+        We need to move \( -x \) to the right side to isolate \( \frac{dy}{dx} \):</p>
+        $$\frac{dy}{dx} = x + y$$
+        <p>Now, our standard function is defined as \( f(x, y) = x + y \).</p>
+
+        <p style="margin-top: 15px;"><strong>Step 2: Identify the Sub-intervals for x</strong><br>
+        Starting from \( x_0 = 0 \) up to \( x = 3 \) with \( h = 0.5 \), we get the sequence:</p>
+        <ul>
+            <li>\( x_0 = 0 \)</li>
+            <li>\( x_1 = 0.5 \)</li>
+            <li>\( x_2 = 1.0 \)</li>
+            <li>\( x_3 = 1.5 \)</li>
+            <li>\( x_4 = 2.0 \)</li>
+            <li>\( x_5 = 2.5 \)</li>
+            <li>\( x_6 = 3.0 \) (Target Value)</li>
+        </ul>
+
+        <p style="margin-top: 15px;"><strong>Step 3: Iterative Calculation</strong><br>
+        We apply the formula \( y_{n+1} = y_n + h \cdot (x_n + y_n) \) step-by-step:</p>
+        
+        <p><strong>Iteration 1</strong> (to find \( y_1 \) at \( x_1 = 0.5 \)):</p>
+        $$y_1 = 1 + 0.5 \cdot (0 + 1) = 1.5$$
+        
+        <p><strong>Iteration 2</strong> (to find \( y_2 \) at \( x_2 = 1.0 \)):</p>
+        $$y_2 = 1.5 + 0.5 \cdot (0.5 + 1.5) = 2.5$$
+        
+        <p><strong>Iteration 3</strong> (to find \( y_3 \) at \( x_3 = 1.5 \)):</p>
+        $$y_3 = 2.5 + 0.5 \cdot (1.0 + 2.5) = 4.25$$
+        
+        <p><strong>Iteration 4</strong> (to find \( y_4 \) at \( x_4 = 2.0 \)):</p>
+        $$y_4 = 4.25 + 0.5 \cdot (1.5 + 4.25) = 7.125$$
+        
+        <p><strong>Iteration 5</strong> (to find \( y_5 \) at \( x_5 = 2.5 \)):</p>
+        $$y_5 = 7.125 + 0.5 \cdot (2.0 + 7.125) = 11.6875$$
+        
+        <p><strong>Iteration 6</strong> (Final step to find \( y_6 \) at \( x_6 = 3.0 \)):</p>
+        $$y_6 = 11.6875 + 0.5 \cdot (2.5 + 11.6875) = 18.78125$$
+
+        <p><b>\( \therefore \)</b> The approximated value of \( y(3) \) is <strong>18.78125</strong>.</p>
+    </div>
+
+    <div class="example-box" style="margin-bottom: 40px; text-align: justify;">
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">Example 2:</h3>
+        <p><strong>Problem:</strong><br>
+        Approximate the value of \( y(6) \) with a step size of \( h = 1.2 \) given the initial condition \( (0, 1) \). The first-order differential equation is given in standard form:</p>
+        $$\frac{dy}{dx} = \cos(x) - 0.2y$$
+
+        <h4 style="margin-top: 20px; margin-bottom: 10px;">Solution:</h4>
+        <p><strong>Step 1: Identify the Standard Function</strong><br>
+        The equation is already isolated on the left side, so our standard function is:</p>
+        $$f(x, y) = \cos(x) - 0.2y$$
+
+        <p style="margin-top: 15px;"><strong>Step 2: Identify the Sub-intervals for x</strong><br>
+        Starting from \( x_0 = 0 \) up to the target \( x = 6 \) with a step size of \( h = 1.2 \), we generate the following points:</p>
+        <ul>
+            <li>\( x_0 = 0 \)</li>
+            <li>\( x_1 = 1.2 \)</li>
+            <li>\( x_2 = 2.4 \)</li>
+            <li>\( x_3 = 3.6 \)</li>
+            <li>\( x_4 = 4.8 \)</li>
+            <li>\( x_5 = 6.0 \) (Target Value)</li>
+        </ul>
+
+        <p style="margin-top: 15px;"><strong>Step 3: Iterative Calculation using Euler's Formula</strong><br>
+        We apply the standard formula \( y_{n+1} = y_n + h \cdot f(x_n, y_n) \) step-by-step <em>(with your scientific calculator set to Radian mode)</em>:</p>
+        
+        <p><strong>Iteration 1</strong> (to find \( y_1 \) at \( x_1 = 1.2 \)):</p>
+        $$y_1 = y_0 + h \cdot \left( \cos(x_0) - 0.2y_0 \right)$$
+        $$y_1 = 1 + 1.2 \cdot \left( \cos(0) - 0.2(1) \right)$$
+        $$y_1 = 1 + 1.2 \cdot (1 - 0.2) = 1 + 1.2(0.8) = 1.9600$$
+        
+        <p><strong>Iteration 2</strong> (to find \( y_2 \) at \( x_2 = 2.4 \)):</p>
+        $$y_2 = y_1 + h \cdot \left( \cos(x_1) - 0.2y_1 \right)$$
+        $$y_2 = 1.9600 + 1.2 \cdot \left( \cos(1.2) - 0.2(1.9600) \right)$$
+        $$y_2 = 1.9600 + 1.2 \cdot (0.3624 - 0.3920) = 1.9600 + 1.2 \cdot (-0.0296) = 1.9245$$
+        
+        <p><strong>Iteration 3</strong> (to find \( y_3 \) at \( x_3 = 3.6 \)):</p>
+        $$y_3 = y_2 + h \cdot \left( \cos(x_2) - 0.2y_2 \right)$$
+        $$y_3 = 1.9245 + 1.2 \cdot \left( \cos(2.4) - 0.2(1.9245) \right)$$
+        $$y_3 = 1.9245 + 1.2 \cdot (-0.7374 - 0.3849) = 1.9245 + 1.2 \cdot (-1.1223) = 0.5777$$
+        
+        <p><strong>Iteration 4</strong> (to find \( y_4 \) at \( x_4 = 4.8 \)):</p>
+        $$y_4 = y_3 + h \cdot \left( \cos(x_3) - 0.2y_3 \right)$$
+        $$y_4 = 0.5777 + 1.2 \cdot \left( \cos(3.6) - 0.2(0.5777) \right)$$
+        $$y_4 = 0.5777 + 1.2 \cdot (-0.8968 - 0.1155) = 0.5777 + 1.2 \cdot (-1.0123) = -0.6371$$
+        
+        <p><strong>Iteration 5</strong> (Final step to find \( y_5 \) at \( x_5 = 6.0 \)):</p>
+        $$y_5 = y_4 + h \cdot \left( \cos(x_4) - 0.2y_4 \right)$$
+        $$y_5 = -0.6371 + 1.2 \cdot \left( \cos(4.8) - 0.2(-0.6371) \right)$$
+        $$y_5 = -0.6371 + 1.2 \cdot (0.0875 + 0.1274) = -0.6371 + 1.2 \cdot (0.2149) = -0.3792$$
+
+        <p><strong>Final Answer:</strong><br>
+        \( \therefore \) The approximated value of \( y(6) \) using Euler's Method is <strong>-0.3792</strong>.</p>
+    </div>
+
+    {% if inputs %}
+    <div class="answer-container" id="live-answer-section">
+        <div class="answer-title">Answer</div>
+        
+        <div class="section-header">GIVEN:</div>
+        <p style="margin-left: 15px;">
+            Standardized Equation: \( \frac{dy}{dx} = {{ inputs.eq_text }} \)<br>
+            Initial Point: \( (x_0, y_0) = ({{ inputs.x0 }}, {{ inputs.y0 }}) \)<br>
+            Step Size (\(h\)): \( {{ inputs.h }} \)<br>
+            Target Value (\(x_n\)): \( {{ inputs.xn }} \)
+        </p>
+        
+        <div class="section-header">X Series:</div>
+        <details>
+            <summary>Click to view \(x\) intervals (\(x_{n+1} = x_n + h\))</summary>
+            <ul>
+                {% for row in results %}
+                <li>\( x_{{ row.step }} = {{ row.x }} \)</li>
+                {% endfor %}
+            </ul>
+        </details>
+
+        <div class="section-header">Y Series:</div>
+        <details>
+            <summary>Click to view approximated \(y\) values</summary>
+            <ul>
+                {% for row in results %}
+                <li>\( y_{{ row.step }} = {{ row.y }} \)</li>
+                {% endfor %}
+            </ul>
+        </details>
+
+        <div class="final-answer-box">
+            \( \therefore \) FINAL ANSWER: y({{ inputs.xn }}) &approx; {{ final_y }}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="calculator-bubble" id="bubbleBtn" onclick="toggleCalculator()">
+    EM Calculator
+</div>
+
+<div class="calculator-panel" id="calcPanel">
+    <div class="panel-header">
+        <span>Euler's Calculator</span>
+        <span class="close-btn" onclick="toggleCalculator()">&times;</span>
+    </div>
+    <div class="panel-body">
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label>Equation \(f(x,y)\):</label>
+                <input type="text" name="equation" value="" placeholder="e.g. x + y" required>
+            </div>
+            <div class="form-group">
+                <label>Initial X \((x_0)\):</label>
+                <input type="number" step="any" name="x0" value="" required>
+            </div>
+            <div class="form-group">
+                <label>Initial Y \((y_0)\):</label>
+                <input type="number" step="any" name="y0" value="" required>
+            </div>
+            <div class="form-group">
+                <label>Step Size \((h)\):</label>
+                <input type="number" step="any" name="h" value="" required>
+            </div>
+            <div class="form-group">
+                <label>Target Value \((x_n)\):</label>
+                <input type="number" step="any" name="xn" value="" required>
+            </div>
+            <button type="submit">Solve</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleCalculator() {
+        var panel = document.getElementById("calcPanel");
+        if (panel.style.display === "none" || panel.style.display === "") {
+            panel.style.display = "block";
+        } else {
+            panel.style.display = "none";
+        }
+    }
+
+    {% if results %}
+        document.getElementById("live-answer-section").scrollIntoView({ behavior: 'smooth' });
+    {% endif %}
+</script>
+
+</body>
+</html>
